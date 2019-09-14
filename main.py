@@ -1,7 +1,7 @@
 import time
 import sys
 from copy import deepcopy
-FRAMES_PER_SEC = 1
+FRAMES_PER_SEC = 4
 def render(string):
     for i in range(80):
         print()
@@ -17,7 +17,7 @@ background = """
               -             -
          ____'               `____
   -=====::(+):::::::::::::::::(+)::=====-
-           (+).""""""""""""",(+)
+           (+).'''''''''''''',(+)
                .           ,
                  `  -=-  '
                  /        \\
