@@ -1,7 +1,7 @@
 import time
 import sys
 from copy import deepcopy
-FRAMES_PER_SEC = 1
+FRAMES_PER_SEC = 4
 def render(string):
     sys.stdout.write(string)
     time.sleep(1/FRAMES_PER_SEC)
@@ -17,7 +17,7 @@ background = """
               -             -
          ____'               `____
   -=====::(+):::::::::::::::::(+)::=====-
-           (+).""""""""""""",(+)
+           (+).'''''''''''''',(+)
                .           ,
                  `  -=-  '
                  /        \\
