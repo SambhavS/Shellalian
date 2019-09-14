@@ -1,4 +1,5 @@
 import time
+import sys
 from copy import deepcopy
 FRAMES_PER_SEC = 1
 def render(string):
