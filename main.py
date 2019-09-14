@@ -3,11 +3,11 @@ import sys
 from copy import deepcopy
 FRAMES_PER_SEC = 1
 def render(string):
+    for i in range(80):
+        print()
     sys.stdout.write(string)
     time.sleep(1/FRAMES_PER_SEC)
     sys.stdout.flush()
-    for i in range(80):
-        print()
 
 def matToStr(mat):
     return ''.join([''.join(row) for row in mat])
@@ -42,15 +42,21 @@ def gen_frames(background, initial, delta_path, img_mat):
         frames.append(f)
     return frames
 
-def main():
+def renderFrames(background, delta_path, img_mat):
     bg = [list("{}{}\n".format(row, ' '*(65-len(row)))) for row in background.split("\n")]
-    delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
-    img_mat =[[" ","0"," "],
-          ["/","|","\\"],
-          ["/"," ","\\"]]
     frames = gen_frames(bg, (14,20), delta_path, img_mat)
     for frame in frames:
         render(matToStr(frame))
 
-
-main()
+while True:
+  user_input = input("> ")
+  if user_input == "cd ..":
+    img_mat =[[" ","0"," "],
+              ["/","|","\\"],
+              ["/"," ","\\"]]
+    delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
+    renderFrames(background, delta_path, img_mat)
+  elif user_input == "quit":
+    break
+  else:
+    print("Command not supported!")
