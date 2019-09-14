@@ -1,5 +1,6 @@
 import time
 import sys
+import os
 from copy import deepcopy
 FRAMES_PER_SEC = 4
 def render(string):
@@ -49,14 +50,30 @@ def renderFrames(background, delta_path, img_mat):
         render(matToStr(frame))
 
 while True:
-  user_input = input("> ")
-  if user_input == "cd ..":
-    img_mat =[[" ","0"," "],
-              ["/","|","\\"],
-              ["/"," ","\\"]]
-    delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
-    renderFrames(background, delta_path, img_mat)
-  elif user_input == "quit":
-    break
-  else:
-    print("Command not supported!")
+    print('> ', end='')
+    userCommand = input().split(" ")
+    firstCommand = userCommand[0]
+    if firstCommand == 'ls':
+        if len(userCommand) > 1:
+            print('\n'.join(os.listdir(userCommand[1])))
+        else:
+            print('\n'.join(os.listdir()))
+    elif firstCommand == 'cd':
+        if len(userCommand) > 1:
+            os.chdir(userCommand[1])
+            if userCommand[1] == "..":
+                img_mat =[[" ","0"," "],
+                          ["/","|","\\"],
+                          ["/"," ","\\"]]
+                delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
+                renderFrames(background, delta_path, img_mat)
+            print(f'you changed directory to {os.getcwd()}!')
+        else:
+            print('Command Error!1')
+    elif firstCommand == 'pwd':
+        print(os.getcwd())
+    elif firstCommand == 'exit' or firstCommand == 'quit':
+        print('GoodBye! :)')
+        break
+    else:
+      print('Command not supported!')
