@@ -2,7 +2,7 @@ import time
 import sys
 import os
 from copy import deepcopy
-FRAMES_PER_SEC = 4
+FRAMES_PER_SEC = 6
 def render(string):
     for i in range(80):
         print()
@@ -28,6 +28,47 @@ background = """
              /                \\
             /                  \\
        """
+person_in_ufo = """
+                 _,--=--._
+               ,'    _    `.
+              -    _(_)_o   -
+         ____'    /_  _/]    `____
+  -=====::(+):::::::::::::::::(+)::=====-
+           (+).'''''''''''''',(+)
+               .           ,
+                 `  -=-  '
+                 /        \\
+                /          \\
+               /            \\
+              /              \\
+             /                \\
+            /                  \\
+
+
+            
+       """
+
+def get_warphole_str(directory_list, max_len):
+    rows = []
+    curr_row_length = 0
+    partitions = [[]] # list of rows of directories
+    partition_index = 0
+    for dirname in directory_list:
+        curr_row_length += len(dirname) + len('  ') * 2
+        if curr_row_length >= max_len:
+            partitions.append([dirname])
+            partition_index += 1
+            curr_row_length = 0
+        else:
+            partitions[partition_index].append(dirname)
+
+    for partition in partitions:
+        top = ''.join([f"  {'_' * len(dirname)}  " for dirname in partition])
+        middle = ''.join([f" /{' ' * len(dirname)}\\ " for dirname in partition])
+        bottom = ''.join([f" \\{'_' * len(dirname)}/ " for dirname in partition])
+        labels = ''.join([f"\033[91m  {dirname}  \033[00m" for dirname in partition])
+        rows.append('\n'.join([top, middle, bottom, labels]))
+    return '\n'.join(rows)
 
 def gen_frames(background, initial, delta_path, img_mat):
     # Given coordinate path and image, output desired frames
@@ -43,30 +84,50 @@ def gen_frames(background, initial, delta_path, img_mat):
         frames.append(f)
     return frames
 
-def renderFrames(background, delta_path, img_mat):
-    bg = [list("{}{}\n".format(row, ' '*(65-len(row)))) for row in background.split("\n")]
-    frames = gen_frames(bg, (14,20), delta_path, img_mat)
+def renderFrames(background, initial_pos, delta_path, img_mat):
+    max_len = max([len(row) for row in background.split("\n")])
+    bg = [list("{}{}\n".format(row, ' '*(max_len-len(row)))) for row in background.split("\n")]
+    frames = gen_frames(bg, initial_pos, delta_path, img_mat)
     for frame in frames:
         render(matToStr(frame))
 
+def base_frame():
+    renderFrames(person_in_ufo, (0,0), [(0,0)], [])
+
+base_frame()
 while True:
+    # renderFrames(person_in_ufo, [(0,0)], [])
     print('> ', end='')
     userCommand = input().split(" ")
     firstCommand = userCommand[0]
     if firstCommand == 'ls':
+        max_len = max([len(row) for row in background.split("\n")])
+        base_frame()
         if len(userCommand) > 1:
-            print('\n'.join(os.listdir(userCommand[1])))
+            print(get_warphole_str(os.listdir(userCommand[1]), max_len))
         else:
-            print('\n'.join(os.listdir()))
+            print(get_warphole_str(os.listdir(), max_len))
     elif firstCommand == 'cd':
         if len(userCommand) > 1:
-            os.chdir(userCommand[1])
+            try:
+                os.chdir(userCommand[1])
+            except:
+                print('Directory not found, check your spelling!')
+                print('Use ls to find what directories are available')
+                continue
             if userCommand[1] == "..":
                 img_mat =[[" ","0"," "],
                           ["/","|","\\"],
                           ["/"," ","\\"]]
                 delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
-                renderFrames(background, delta_path, img_mat)
+                renderFrames(background, (14,20), delta_path, img_mat)
+            else:
+                img_mat =[[" ","0"," "],
+                          ["/","|","\\"],
+                          ["/"," ","\\"]]
+                delta_path = [(1,0),(1,0),(1,0),(1,0), (1,0)]
+                renderFrames(background, (8,20), delta_path, img_mat)
+            base_frame()
             print(f'you changed directory to {os.getcwd()}!')
         else:
             print('Command Error!1')
