@@ -14,36 +14,38 @@ def render(string):
 def matToStr(mat):
     return ''.join([''.join(row) for row in mat])
 background = """
-                 _,--=--._
+ \033[95m                _,--=--._
                ,'         `.
               -             -
          ____'               `____
   -=====::(+):::::::::::::::::(+)::=====-
            (+).'''''''''''''',(+)
                .           ,
-                 `  -=-  '
+                 `  -=-  '\033[00m
                  /        \\
                 /          \\
                /            \\
               /              \\
              /                \\
             /                  \\
+
        """
 person_in_ufo = """
-                 _,--=--._
-               ,'    _    `.
-              -    /(_)\\_o  -
-         ____'     /_ _]     `____
+\033[95m                 _,--=--._
+               ,'    \033[32m_\033[95m    `.
+              -    \033[32m/(_)\\\033[95m    -
+         ____'     \033[32m/_o_\\\033[95m      `____
   -=====::(+):::::::::::::::::(+)::=====-
            (+).'''''''''''''',(+)
                .           ,
-                 `  -=-  '
+                 `  -=-  '\033[00m
                  /        \\
                 /          \\
                /            \\
               /              \\
              /                \\
             /                  \\
+
 
 
        """
@@ -57,23 +59,24 @@ second_background = """
 
 
 
-                   ,-=-.
+
+\033[95m                   ,-=-.
                 ---.....---
-                   `-=-'
+                   `-=-'\033[00m
        """
 goodbye = """
         ----------
        | Goodbye! |
         ----------
                 \\
-                  ,-=-.
+\033[95m                  ,-=-.
                 --.....--
-                  `-=-'
+                  `-=-'\033[00m
 
        """
 goodbye_animation = [goodbye, goodbye, goodbye, goodbye,
        """
-        
+ \033[93m        
 
 
 
@@ -101,7 +104,9 @@ goodbye_animation = [goodbye, goodbye, goodbye, goodbye,
                      
                     
 
-       """, '']
+       """, '\033[00m']
+
+help_message = 'Use cd to change directories and ls to list what is available in the directory.\nDirectories will show up as warpholes and files will show up as stars.'
 
 def get_warphole(dirname, max_len):
     padding = f"{' ' * ((max_len - len(dirname)) // 2)}"
@@ -181,6 +186,7 @@ def base_frame():
     renderFrames(person_in_ufo, (0,0), [(0,0)], [])
 
 base_frame()
+print(help_message)
 while True:
     # renderFrames(person_in_ufo, [(0,0)], [])
     print('> ', end='')
@@ -204,32 +210,33 @@ while True:
             try:
                 os.chdir(userCommand[1])
             except:
-                print('Directory not found--you may have tried a file')
-                print('Use ls to find what directories are available')
+                print('\033[91mDirectory not found--you may have tried a file')
+                print('Use ls to find what directories are available\033[00m')
                 continue
+            img_mat =[["\033[32m/","0","\\\033[00m"],
+                          ["\033[32m/","|","\\\033[00m"],
+                          ["\033[32m/"," ","\\\033[00m"]]
             if userCommand[1] == "..":
-                img_mat =[["/","0","\\"],
-                          ["/","|","\\"],
-                          ["/"," ","\\"]]
-                delta_path = [(-1,0),(-1,0),(-1,0),(-1,0),(-1,0),(-1,0),(-1,0)]
+                
+                delta_path = [(-1,0),(-1,0),(-1,0),(-1,0),(-1,0),(-1,0)]
                 renderFrames(get_warphole('.. (the parent directory)', max_len) + second_background, (14,20), delta_path, img_mat)
                 renderFrames(background, (14,20), delta_path, img_mat)
             else:
-                img_mat =[["/","0","\\"],
-                          ["/","|","\\"],
-                          ["/"," ","\\"]]
-                delta_path = [(1,0),(1,0),(1,0),(1,0), (1,0),(1,0), (1,0)]
+                delta_path = [(1,0),(1,0),(1,0),(1,0),(1,0),(1,0)]
                 renderFrames(background + get_warphole(userCommand[1], max_len), (8,20), delta_path, img_mat)
                 renderFrames(get_warphole(userCommand[1], max_len) + second_background, (4,20), delta_path, img_mat)
             base_frame()
-            print(f'You changed directory to "{os.getcwd()}"!')
+            print(f'\033[96mYou changed directory to "{os.getcwd()}"!\033[00m')
         else:
-            print("You're not allowed to use cd without naming a directory after it!")
+            print("\033[91mChanging to home directory with cd not supported\033[00m")
     elif firstCommand == 'pwd':
         print(os.getcwd())
     elif firstCommand == 'exit' or firstCommand == 'quit':
         for frame in goodbye_animation:
             render(frame)
         break
+    elif firstCommand == 'help':
+        print(help_message)
     else:
-      print('Command not supported!')
+      print('\033[91mCommand not supported!\033[00m')
+      print(help_message)
