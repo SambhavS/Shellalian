@@ -2,7 +2,7 @@ import time
 import sys
 import os
 from copy import deepcopy
-FRAMES_PER_SEC = 6
+FRAMES_PER_SEC = 5
 def render(string):
     for i in range(80):
         print()
@@ -45,8 +45,16 @@ person_in_ufo = """
             /                  \\
 
 
-            
        """
+
+def get_warphole(dirname, max_len):
+    padding = f"{' ' * ((max_len - len(dirname)) // 2)}"
+    warphole = '\n'
+    warphole += f"{padding}  {'_' * len(dirname)}  \n"
+    warphole += f"{padding} /{' ' * len(dirname)}\\ \n"
+    warphole += f"{padding} \\{'_' * len(dirname)}/ \n"
+    warphole += f"{padding}\033[91m  {dirname}  \033[00m\n"
+    return warphole
 
 def get_warphole_str(directory_list, max_len):
     rows = []
@@ -100,8 +108,8 @@ while True:
     print('> ', end='')
     userCommand = input().split(" ")
     firstCommand = userCommand[0]
+    max_len = max([len(row) for row in background.split("\n")])
     if firstCommand == 'ls':
-        max_len = max([len(row) for row in background.split("\n")])
         base_frame()
         if len(userCommand) > 1:
             print(get_warphole_str(os.listdir(userCommand[1]), max_len))
@@ -126,7 +134,8 @@ while True:
                           ["/","|","\\"],
                           ["/"," ","\\"]]
                 delta_path = [(1,0),(1,0),(1,0),(1,0), (1,0)]
-                renderFrames(background, (8,20), delta_path, img_mat)
+                renderFrames(background + get_warphole(userCommand[1], max_len), (8,20), delta_path, img_mat)
+
             base_frame()
             print(f'you changed directory to {os.getcwd()}!')
         else:
