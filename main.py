@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import time
 import sys
 import os
@@ -31,8 +32,8 @@ background = """
 person_in_ufo = """
                  _,--=--._
                ,'    _    `.
-              -    /(_)\\_o   -
-         ____'     /_ _]    `____
+              -    /(_)\\_o  -
+         ____'     /_ _]     `____
   -=====::(+):::::::::::::::::(+)::=====-
            (+).'''''''''''''',(+)
                .           ,
@@ -60,6 +61,47 @@ second_background = """
                 ---.....---
                    `-=-'
        """
+goodbye = """
+        ----------
+       | Goodbye! |
+        ----------
+                \\
+                  ,-=-.
+                --.....--
+                  `-=-'
+
+       """
+goodbye_animation = [goodbye, goodbye, goodbye, goodbye,
+       """
+        
+
+
+
+                    ,
+                   -+-
+                    '
+
+       """,
+       """
+        
+
+
+
+                    
+                    + 
+                    
+
+       """,
+       """
+        
+
+
+
+                    
+                     
+                    
+
+       """, '']
 
 def get_warphole(dirname, max_len):
     padding = f"{' ' * ((max_len - len(dirname)) // 2)}"
@@ -126,15 +168,16 @@ while True:
     if firstCommand == 'ls':
         base_frame()
         if len(userCommand) > 1:
-            print(get_warphole_str(os.listdir(userCommand[1]), max_len))
+            print(get_warphole_str(dirnames, max_len))
         else:
-            print(get_warphole_str(os.listdir(), max_len))
+            dirnames = [dirname for dirname in os.listdir() if dirname[0] != '.'] # exclude hidden files
+            print(get_warphole_str(dirnames, max_len))
     elif firstCommand == 'cd':
         if len(userCommand) > 1:
             try:
                 os.chdir(userCommand[1])
             except:
-                print('Directory not found, check your spelling!')
+                print('Directory not found--you may have tried a file')
                 print('Use ls to find what directories are available')
                 continue
             if userCommand[1] == "..":
@@ -152,13 +195,14 @@ while True:
                 renderFrames(background + get_warphole(userCommand[1], max_len), (8,20), delta_path, img_mat)
                 renderFrames(get_warphole(userCommand[1], max_len) + second_background, (4,20), delta_path, img_mat)
             base_frame()
-            print(f'you changed directory to "{os.getcwd()}"!')
+            print(f'You changed directory to "{os.getcwd()}"!')
         else:
-            print('Command Error!1')
+            print("You're not allowed to use cd without naming a directory after it!")
     elif firstCommand == 'pwd':
         print(os.getcwd())
     elif firstCommand == 'exit' or firstCommand == 'quit':
-        print('Goodbye! :)')
+        for frame in goodbye_animation:
+            render(frame)
         break
     else:
       print('Command not supported!')
