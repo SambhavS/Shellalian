@@ -31,8 +31,8 @@ background = """
 person_in_ufo = """
                  _,--=--._
                ,'    _    `.
-              -    _(_)_o   -
-         ____'    /_  _/]    `____
+              -    /(_)\\_o   -
+         ____'     /_ _]    `____
   -=====::(+):::::::::::::::::(+)::=====-
            (+).'''''''''''''',(+)
                .           ,
@@ -45,6 +45,20 @@ person_in_ufo = """
             /                  \\
 
 
+       """
+second_background = """
+
+
+
+
+
+
+
+
+
+                   ,-=-.
+                ---.....---
+                   `-=-'
        """
 
 def get_warphole(dirname, max_len):
@@ -124,26 +138,27 @@ while True:
                 print('Use ls to find what directories are available')
                 continue
             if userCommand[1] == "..":
-                img_mat =[[" ","0"," "],
+                img_mat =[["/","0","\\"],
                           ["/","|","\\"],
                           ["/"," ","\\"]]
-                delta_path = [(-1,0),(-1,0),(-1,0),(-1,0), (-1,0)]
+                delta_path = [(-1,0),(-1,0),(-1,0),(-1,0),(-1,0),(-1,0),(-1,0)]
+                renderFrames(get_warphole('.. (the parent directory)', max_len) + second_background, (14,20), delta_path, img_mat)
                 renderFrames(background, (14,20), delta_path, img_mat)
             else:
-                img_mat =[[" ","0"," "],
+                img_mat =[["/","0","\\"],
                           ["/","|","\\"],
                           ["/"," ","\\"]]
-                delta_path = [(1,0),(1,0),(1,0),(1,0), (1,0)]
+                delta_path = [(1,0),(1,0),(1,0),(1,0), (1,0),(1,0), (1,0)]
                 renderFrames(background + get_warphole(userCommand[1], max_len), (8,20), delta_path, img_mat)
-
+                renderFrames(get_warphole(userCommand[1], max_len) + second_background, (4,20), delta_path, img_mat)
             base_frame()
-            print(f'you changed directory to {os.getcwd()}!')
+            print(f'you changed directory to "{os.getcwd()}"!')
         else:
             print('Command Error!1')
     elif firstCommand == 'pwd':
         print(os.getcwd())
     elif firstCommand == 'exit' or firstCommand == 'quit':
-        print('GoodBye! :)')
+        print('Goodbye! :)')
         break
     else:
       print('Command not supported!')
