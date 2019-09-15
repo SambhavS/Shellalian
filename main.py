@@ -106,11 +106,33 @@ goodbye_animation = [goodbye, goodbye, goodbye, goodbye,
 def get_warphole(dirname, max_len):
     padding = f"{' ' * ((max_len - len(dirname)) // 2)}"
     warphole = '\n'
-    warphole += f"{padding}  {'_' * len(dirname)}  \n"
+    warphole += f"\033[34m{padding}  {'_' * len(dirname)}  \n"
     warphole += f"{padding} /{' ' * len(dirname)}\\ \n"
     warphole += f"{padding} \\{'_' * len(dirname)}/ \n"
-    warphole += f"{padding}\033[91m  {dirname}  \033[00m\n"
+    warphole += f"{padding}\033[95m  {dirname}  \033[00m\n"
     return warphole
+
+def get_star_str(filename_list, max_len):
+    rows = []
+    curr_row_length = 0
+    partitions = [[]] # list of rows of directories
+    partition_index = 0
+    for filename in filename_list:
+        curr_row_length += len(filename) + 4
+        if curr_row_length >= max_len:
+            partitions.append([filename])
+            partition_index += 1
+            curr_row_length = 0
+        else:
+            partitions[partition_index].append(filename)
+
+    for partition in partitions:
+        top = ''.join([f"\033[93m  {' ' * (len(filename) // 2)};{' ' * (len(filename) // 2)}" for filename in partition])
+        middle = ''.join([f"  {' ' * (len(filename) // 2 - 2)}--+--{' ' * (len(filename) // 2 - 2)}" for filename in partition])
+        bottom = ''.join([f"  {' ' * (len(filename) // 2)}!{' ' * (len(filename) // 2)}" for filename in partition])
+        labels = ''.join([f"\033[91m  {filename}\033[00m" for filename in partition])
+        rows.append('\n'.join([top, middle, bottom, labels]))
+    return '\n'.join(rows)
 
 def get_warphole_str(directory_list, max_len):
     rows = []
@@ -127,10 +149,10 @@ def get_warphole_str(directory_list, max_len):
             partitions[partition_index].append(dirname)
 
     for partition in partitions:
-        top = ''.join([f"  {'_' * len(dirname)}  " for dirname in partition])
+        top = ''.join([f"\033[34m  {'_' * len(dirname)}  " for dirname in partition])
         middle = ''.join([f" /{' ' * len(dirname)}\\ " for dirname in partition])
         bottom = ''.join([f" \\{'_' * len(dirname)}/ " for dirname in partition])
-        labels = ''.join([f"\033[91m  {dirname}  \033[00m" for dirname in partition])
+        labels = ''.join([f"\033[95m  {dirname}  \033[00m" for dirname in partition])
         rows.append('\n'.join([top, middle, bottom, labels]))
     return '\n'.join(rows)
 
@@ -168,9 +190,14 @@ while True:
     if firstCommand == 'ls':
         base_frame()
         if len(userCommand) > 1:
-            print(get_warphole_str(dirnames, max_len))
+            if os.path.isdir(userCommand[0]):
+                print(get_warphole_str([userCommand[0]], max_len))
+            else:
+                print(get_star_str([userCommand[0]], max_len))
         else:
-            dirnames = [dirname for dirname in os.listdir() if dirname[0] != '.'] # exclude hidden files
+            dirnames = [name for name in os.listdir() if name[0] != '.' and os.path.isdir(name)] # exclude hidden files
+            filenames = [name for name in os.listdir() if name[0] != '.' and not os.path.isdir(name)]
+            print(get_star_str(filenames, max_len))
             print(get_warphole_str(dirnames, max_len))
     elif firstCommand == 'cd':
         if len(userCommand) > 1:
